@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Para Carolay — de Stefano</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --azul:       #2155A3;
+      --azul-suave: #D6E4F7;
+      --blanco:     #FAFCFF;
+      --rosa:       #F7C5D0;
+      --rosa-suave: #FDF0F3;
+      --dorado:     #C9A84C;
+      --texto:      #1A1A2E;
+      --gris:       #6B7280;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--blanco);
+      color: var(--texto);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ── ESTRELLAS DE FONDO ── */
+    #stars-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.35;
+    }
+
+    /* ── SECCIONES ── */
+    section {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 24px;
+    }
+
+    /* ── HERO ── */
+    #hero {
+      background: linear-gradient(160deg, #0a1628 0%, #132244 50%, #1a0a2e 100%);
+      color: #fff;
+      text-align: center;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--dorado);
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fadeUp 1s 0.3s forwards;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(52px, 10vw, 110px);
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: -2px;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeUp 1s 0.6s forwards;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--rosa);
+    }
+
+    .hero-subtitle {
+      font-size: clamp(14px, 2.5vw, 18px);
+      font-weight: 300;
+      color: rgba(255,255,255,0.65);
+      max-width: 480px;
+      line-height: 1.8;
+      margin: 0 auto 48px;
+      opacity: 0;
+      animation: fadeUp 1s 0.9s forwards;
+    }
+
+    .word-special {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(22px, 4vw, 36px);
+      font-style: italic;
+      font-weight: 300;
+      color: var(--dorado);
+      display: block;
+      margin-top: 16px;
+      letter-spacing: 1px;
+      opacity: 0;
+      animation: fadeUp 1s 1.2s forwards;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.4);
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeUp 1s 2s forwards;
+    }
+
+    .scroll-hint::after {
+      content: '';
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+      animation: scrollLine 1.5s ease-in-out infinite;
+    }
+
+    /* ── SECCIÓN: NUESTRO INICIO ── */
+    #inicio {
+      background: var(--rosa-suave);
+      text-align: center;
+    }
+
+    /* ── SECCIÓN: TIMELINE ── */
+    #momentos {
+      background: var(--blanco);
+    }
+
+    .timeline-wrap {
+      width: 100%;
+      max-width: 680px;
+    }
+
+    .tl-item {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 0 28px;
+      margin-bottom: 56px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s, transform 0.7s;
+    }
+
+    .tl-item.visible { opacity: 1; transform: none; }
+
+    .tl-date {
+      text-align: right;
+      padding-top: 4px;
+    }
+
+    .tl-date span {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      font-style: italic;
+      color: var(--azul);
+    }
+
+    .tl-body {
+      border-left: 1px solid var(--azul-suave);
+      padding-left: 28px;
+      position: relative;
+    }
+
+    .tl-body::before {
+      content: '';
+      position: absolute;
+      left: -5px; top: 8px;
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: var(--azul);
+    }
+
+    .tl-body h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(20px, 3vw, 26px);
+      font-weight: 400;
+      margin-bottom: 8px;
+      color: var(--texto);
+    }
+
+    .tl-body p {
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--gris);
+    }
+
+    /* ── SECCIÓN: VIDEO ── */
+    #video-seccion {
+      background: linear-gradient(160deg, #0a1628 0%, #132244 100%);
+      color: #fff;
+      text-align: center;
+    }
+
+    .video-contenedor {
+      margin-top: 40px;
+      width: 100%;
+      max-width: 560px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,168,76,0.3);
+      position: relative;
+    }
+
+    .video-contenedor video {
+      width: 100%;
+      display: block;
+      border-radius: 16px;
+    }
+
+    .video-marco {
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      border: 1px solid rgba(201,168,76,0.25);
+      pointer-events: none;
+    }
+
+    .video-pie {
+      margin-top: 20px;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(16px, 2.5vw, 22px);
+      color: rgba(255,255,255,0.65);
+      max-width: 480px;
+      line-height: 1.8;
+    }
+
+    /* ── SECCIÓN: APODOS ── */
+    #apodos {
+      background: linear-gradient(135deg, #0d1b3e 0%, #1a2a5e 100%);
+      color: #fff;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .apodos-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      max-width: 700px;
+      margin: 48px auto 0;
+    }
+
+    .apodo-tag {
+      padding: 10px 22px;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 100px;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(16px, 2.5vw, 22px);
+      color: rgba(255,255,255,0.85);
+      transition: background 0.3s, border-color 0.3s, transform 0.3s;
+      cursor: default;
+    }
+
+    .apodo-tag:hover {
+      background: rgba(201,168,76,0.15);
+      border-color: var(--dorado);
+      color: var(--dorado);
+      transform: scale(1.05);
+    }
+
+    /* ── SECCIÓN: CANCIÓN ── */
+    #cancion {
+      background: var(--azul-suave);
+      text-align: center;
+    }
+
+    .nota-musical {
+      font-size: 72px;
+      margin-bottom: 24px;
+      display: block;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    /* ── SECCIÓN: CARTA ── */
+    #carta {
+      background: var(--blanco);
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .carta-papel {
+      background: #fff;
+      border: 1px solid #e8edf5;
+      border-radius: 4px;
+      padding: clamp(40px, 6vw, 80px) clamp(32px, 5vw, 72px);
+      box-shadow: 0 4px 40px rgba(33,85,163,0.07);
+      width: 100%;
+    }
+
+    .carta-papel p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(17px, 2.5vw, 22px);
+      font-weight: 300;
+      line-height: 1.9;
+      color: var(--texto);
+      margin-bottom: 1.4em;
+    }
+
+    .carta-firma {
+      margin-top: 40px;
+      text-align: right;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(18px, 3vw, 26px);
+      color: var(--azul);
+    }
+
+    .palabra-inventada {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--azul), var(--dorado));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 1.15em;
+      font-weight: 400;
+    }
+
+    /* ── SECCIÓN: PREGUNTA FINAL ── */
+    #pregunta {
+      background: linear-gradient(160deg, #0a1628 0%, #132244 60%, #1a0a2e 100%);
+      color: #fff;
+      text-align: center;
+    }
+
+    .pregunta-titulo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(28px, 5vw, 52px);
+      font-weight: 300;
+      line-height: 1.3;
+      max-width: 600px;
+      margin: 0 auto 16px;
+    }
+
+    .pregunta-subtitulo {
+      font-size: 14px;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 56px;
+      letter-spacing: 0.5px;
+    }
+
+    .botones {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 18px 48px;
+      border-radius: 100px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.5px;
+    }
+
+    .btn:hover { transform: scale(1.04); }
+
+    .btn-si {
+      background: linear-gradient(135deg, #2155A3, #3a7bd5);
+      color: #fff;
+      box-shadow: 0 8px 32px rgba(33,85,163,0.4);
+    }
+
+    .btn-si:hover { box-shadow: 0 12px 40px rgba(33,85,163,0.6); }
+
+    .btn-no {
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .btn-no:hover { border-color: rgba(255,255,255,0.5); color: rgba(255,255,255,0.8); }
+
+    /* ── RESPUESTA ── */
+    #respuesta-box {
+      display: none;
+      margin-top: 48px;
+      max-width: 480px;
+      text-align: center;
+    }
+
+    #respuesta-box p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(18px, 3vw, 26px);
+      font-weight: 300;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.85);
+    }
+
+    /* ── TIPOGRAFÍA COMPARTIDA ── */
+    .section-eyebrow {
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--azul);
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(32px, 6vw, 60px);
+      font-weight: 300;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+
+    .section-body {
+      font-size: clamp(15px, 2vw, 18px);
+      line-height: 1.85;
+      color: var(--gris);
+      max-width: 540px;
+      text-align: center;
+    }
+
+    .divider {
+      width: 40px;
+      height: 1px;
+      background: var(--azul);
+      margin: 28px auto;
+    }
+
+    /* ── ANIMACIONES ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-12px); }
+    }
+
+    @keyframes scrollLine {
+      0%   { transform: scaleY(0); transform-origin: top; }
+      50%  { transform: scaleY(1); transform-origin: top; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15%       { transform: scale(1.25); }
+      30%       { transform: scale(1); }
+      45%       { transform: scale(1.15); }
+    }
+
+    .heart { display: inline-block; animation: heartbeat 2s ease-in-out infinite; }
+
+    /* corazones flotantes en el hero */
+    .floating-hearts {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .fh {
+      position: absolute;
+      bottom: -30px;
+      font-size: clamp(14px, 2vw, 22px);
+      opacity: 0;
+      animation: riseHeart linear infinite;
+    }
+
+    @keyframes riseHeart {
+      0%   { opacity: 0; transform: translateY(0) rotate(0deg); }
+      10%  { opacity: 0.6; }
+      90%  { opacity: 0.3; }
+      100% { opacity: 0; transform: translateY(-110vh) rotate(20deg); }
+    }
+
+    /* corazón grande latiendo en sección carta */
+    .big-heart {
+      font-size: 48px;
+      display: block;
+      text-align: center;
+      margin-bottom: 32px;
+      animation: heartbeat 2s ease-in-out infinite;
+    }
+
+    /* responsive */
+    @media (max-width: 560px) {
+      .tl-item { grid-template-columns: 70px 1fr; gap: 0 16px; }
+      .carta-papel { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Estrellas animadas -->
+<canvas id="stars-canvas"></canvas>
+
+<!-- ══════════════════════════════════════
+     HERO
+══════════════════════════════════════ -->
+<section id="hero">
+  <div class="floating-hearts" id="fhearts"></div>
+
+  <p class="hero-eyebrow">Una carta desde el corazón · Para Carolay</p>
+
+  <h1 class="hero-title">
+    Mi <em>cuchurrumina</em>,<br>te extraño.
+  </h1>
+
+  <p class="hero-subtitle">
+    Casi tres años guardados aquí,<br>
+    en cada recuerdo, en cada palabra.<br>
+    <span class="word-special">Teammilcarolmuch</span>
+  </p>
+
+  <div class="scroll-hint">baja despacio</div>
+</section>
+
+<!-- ══════════════════════════════════════
+     NUESTRO INICIO
+══════════════════════════════════════ -->
+<section id="inicio">
+  <p class="section-eyebrow">El principio de todo</p>
+  <h2 class="section-title" style="color:var(--azul);">Un banco.<br>Unos juegos. Tus trenzas.</h2>
+  <div class="divider"></div>
+  <p class="section-body">
+    Nos conocimos frente a ese banco, y tú venías con tus trenzitas que me gustaron desde el primer segundo.
+    Teníamos tanta vergüenza que no pudimos darnos un beso… pero nos abrazamos,
+    y en ese abrazo ya supe que algo especial comenzaba.
+    <br><br>
+    Desde el <strong>24 de abril del 2023</strong>, mi vida cambió contigo.
+  </p>
+</section>
+
+<!-- ══════════════════════════════════════
+     MOMENTOS
+══════════════════════════════════════ -->
+<section id="momentos" style="align-items:center;">
+  <p class="section-eyebrow" style="text-align:center;">Lo que no olvidaré jamás</p>
+  <h2 class="section-title" style="text-align:center; margin-bottom:56px;">Nuestros momentos</h2>
+
+  <div class="timeline-wrap">
+
+    <div class="tl-item">
+      <div class="tl-date"><span>Abril 2023</span></div>
+      <div class="tl-body">
+        <h3>El día que comenzamos 💙</h3>
+        <p>El 24 de abril dijimos que sí. Desde ese día empezó la historia más bonita que he vivido.
+           Éramos felices, y yo lo sabía en cada momento que estaba a tu lado.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date"><span>Primer abrazo</span></div>
+      <div class="tl-body">
+        <h3>El banco, los juegos y tus trenzas ✨</h3>
+        <p>Cuando te vi llegar con esas trenzitas se me olvidó cómo hablar.
+           Teníamos tanta vergüenza de darnos un beso… así que nos abrazamos.
+           Ese abrazo lo llevo todavía.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date"><span>Mi trabajo</span></div>
+      <div class="tl-body">
+        <h3>Cuando me trajiste el terno de tu tío 👔</h3>
+        <p>Viniste tú hasta mi trabajo a traerme el terno de tu tío para que más tarde pudiera acompañarte a su fiesta de 18.
+           Ese gesto me llegó al alma. Hiciste ese camino solo para que yo pudiera estar ahí, y eso habla de lo mucho que me querías.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date"><span>La fiesta</span></div>
+      <div class="tl-body">
+        <h3>Los 18 de tu tío, bailando juntos 🎉</h3>
+        <p>Esa noche estuvimos juntos con tu familia, bailamos, y yo no quería que terminara.
+           Verte contenta, rodeada de los tuyos y a la vez conmigo… fue una de esas noches que no se olvidan.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date"><span>26 de enero</span></div>
+      <div class="tl-body">
+        <h3>Tu cumpleaños con tu familia 🎂</h3>
+        <p>Estar con tu familia el día de tu cumpleaños fue algo que me hizo sentir parte de algo más grande.
+           Verte feliz, rodeada de los tuyos, y saber que yo también era parte de ese día… no lo cambiaría por nada.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date"><span>Año nuevo</span></div>
+      <div class="tl-body">
+        <h3>El año nuevo que vivimos juntos 🎆</h3>
+        <p>Recibir el año nuevo a tu lado fue una de esas cosas que uno guarda muy adentro.
+           Con la ilusión de todo lo que vendría, contigo, para nosotros.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date"><span>Cada vez</span></div>
+      <div class="tl-body">
+        <h3>Ir a comer, el pollito y tus antojos 🍗</h3>
+        <p>Cuántas veces salimos a comer juntos. Yo compraba el pollo, tú te emocionabas.
+           Cosas tan simples que se volvieron sagradas. No había nada más bonito que verte contenta por algo así.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date"><span>Universidad</span></div>
+      <div class="tl-body">
+        <h3>Ir a recogerte a la universidad 🎓</h3>
+        <p>Cuántas veces fui yo a esperarte a la salida de tu universidad. Verte aparecer entre la gente
+           y saber que el resto del día era nuestro… eso me llenaba de alegría. Esos momentos tan simples
+           eran los que más amaba.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date"><span>Tu primer día</span></div>
+      <div class="tl-body">
+        <h3>Tu primer día de clases en la universidad 🌷</h3>
+        <p>Fui yo a dejarte una flor y tu cajita de tulipanes en tu primer día de clases.
+           Quería que ese día tan especial para ti lo sintieras acompañada, que supieras que
+           yo estaba ahí celebrando cada paso importante de tu vida. Ese día fue de los más bonitos.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date"><span>Un regalo</span></div>
+      <div class="tl-body">
+        <h3>El cuadro de ti y tu abuelo 🖼️</h3>
+        <p>Cuando te regalé ese cuadro de los dos, de ti y tu abuelo que ya no está…
+           fue lo más especial que pude darte. Quería que tuvieras a ambos juntos para siempre.
+           Espero que lo guardes siempre, mi tiquitita.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date"><span>El chifle</span></div>
+      <div class="tl-body">
+        <h3>El chifle y tus consejos 🍌</h3>
+        <p>Compraba chifle y tú me decías "no comas tanto de eso". Y a mí me hacía gracia porque era puro cariño
+           disfrazado de regaño. Esas pequeñeces son las que más extraño.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date"><span>Sus problemas</span></div>
+      <div class="tl-body">
+        <h3>Cuando me contabas todo 🌊</h3>
+        <p>Siempre que algo pasaba en tu familia, me lo contabas. Y yo estaba.
+           Siempre. Escucharte, apoyarte, ser ese espacio donde podías dejar todo lo que te pesaba…
+           era lo más importante que podía hacer por ti.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date"><span>Mis problemas</span></div>
+      <div class="tl-body">
+        <h3>Cuando tú estabas para mí 🌙</h3>
+        <p>Cada vez que tenía un problema, tú estabas. No importaba qué.
+           Tu sola presencia, tu voz, tus miradas me devolvían la calma.
+           Me apoyabas de una manera que nadie más supo hacerlo.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date"><span>Los detalles</span></div>
+      <div class="tl-body">
+        <h3>Esos detalles tuyos que guardo en mi cuarto 🎁</h3>
+        <p>Me regalabas detalles con tanto cariño… y aún los tengo en mi cuarto.
+           Cada vez que los veo, te veo a ti. Son más que cosas: son partes de lo que fuimos,
+           y no me imagino quitarlos de ahí.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date"><span>Mi primera vez</span></div>
+      <div class="tl-body">
+        <h3>Contigo hice lo que nunca había hecho 💫</h3>
+        <p>Siendo tú mi primera vez en todo… eso no se olvida.
+           Hice cosas que nunca me imaginé hacer, sentí cosas que nunca había sentido.
+           Eres el primero de muchos capítulos que escribiste en mí.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date"><span>Siempre</span></div>
+      <div class="tl-body">
+        <h3>Tu polo de Universitario ⚽</h3>
+        <p>Cómo no voy a extrañar verte con tu polo de la 'U'. Te lo ponías con orgullo y te veías hermosa.
+           Esas cosas pequeñas son las que más duele recordar.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date"><span>Cada que nos veíamos</span></div>
+      <div class="tl-body">
+        <h3>Éramos felices cuando estábamos juntos 🌟</h3>
+        <p>Sé que nuestra relación también tuvo discusiones, pero cada vez que nos veíamos,
+           todo eso desaparecía. Éramos felices y muy contentos. Lo nuestro era real.
+           Lo extraño más de lo que puedo explicar.</p>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date"><span>El futuro</span></div>
+      <div class="tl-body">
+        <h3>Nuestros sueños y promesas 🌙</h3>
+        <p>Planeamos tanto juntos. Un futuro, un camino, promesas que hicimos los dos.
+           Esas conversaciones de a dónde íbamos, qué queríamos construir…
+           siguen vivas en mí.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     VIDEO
+══════════════════════════════════════ -->
+<section id="video-seccion">
+  <p class="section-eyebrow" style="color:var(--dorado);">Un momento nuestro</p>
+  <h2 class="section-title">Un pedacito de lo que guardo</h2>
+  <div class="divider" style="background:var(--dorado);"></div>
+  <p class="section-body" style="color:rgba(255,255,255,0.6);">
+    Estos son los detalles que aún tengo en mi cuarto.<br>
+    Los que me regalaste con tanto cariño.<br>
+    Los que me recuerdan que lo nuestro fue real.
+  </p>
+
+  <div class="video-contenedor">
+    <video controls playsinline preload="metadata" poster="">
+      <source src="VID_20260614_203242.mp4" type="video/mp4">
+      Tu navegador no soporta video. Pero este momento existe y lo guardo.
+    </video>
+    <div class="video-marco"></div>
+  </div>
+
+  <p class="video-pie">
+    "…y aún sigo teniendo esos detalles en mi cuarto." 💙
+  </p>
+</section>
+
+<!-- ══════════════════════════════════════
+     APODOS
+══════════════════════════════════════ -->
+<section id="apodos">
+  <p class="section-eyebrow" style="color:var(--dorado);">Nuestro idioma secreto</p>
+  <h2 class="section-title">Los nombres con los<br>que nos quisimos</h2>
+  <p class="section-body" style="color:rgba(255,255,255,0.6); margin:0 auto;">
+    Tú y yo teníamos un mundo propio dentro de uno.
+    Nadie más hablaba así. Solo nosotros.
+  </p>
+
+  <div class="apodos-cloud">
+    <span class="apodo-tag">mi cuchurrumin</span>
+    <span class="apodo-tag">mi cuchurrumina</span>
+    <span class="apodo-tag">mi bibito tiquitito</span>
+    <span class="apodo-tag">mi bibita tiquitita</span>
+    <span class="apodo-tag">mi gordito</span>
+    <span class="apodo-tag">mi gordita</span>
+    <span class="apodo-tag">mi wawita</span>
+    <span class="apodo-tag">mi cholita</span>
+    <span class="apodo-tag">mi niña hermosa</span>
+    <span class="apodo-tag">mi tiquitita bella</span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     CANCIÓN
+══════════════════════════════════════ -->
+<section id="cancion">
+  <span class="nota-musical">🎵</span>
+  <p class="section-eyebrow">Nuestra canción</p>
+  <h2 class="section-title" style="color:var(--azul);">No hay nadie más</h2>
+  <div class="divider"></div>
+  <p class="section-body">
+    Sebastián Yatra lo dice mejor de lo que yo podría.<br>
+    Cada vez que la escucho, eres tú.<br>
+    <em style="color:var(--azul); font-family:'Cormorant Garamond',serif; font-size:1.2em;">
+      Siempre serás mi canción, Carolay.
+    </em>
+  </p>
+</section>
+
+<!-- ══════════════════════════════════════
+     CARTA
+══════════════════════════════════════ -->
+<section id="carta" style="min-height: auto; padding: 100px 24px;">
+  <span class="big-heart">💙</span>
+
+  <div class="carta-papel">
+    <p>Carolay,</p>
+
+    <p>
+      Sé que no estás leyendo esto porque tengas que hacerlo.
+      Lo estás leyendo porque algo dentro de ti te dejó llegar hasta aquí.
+      Y eso ya me importa mucho.
+    </p>
+
+    <p>
+      Llevamos meses distanciados y no pasa un día en que no piense en ti.
+      En cómo me mirabas. En tus caricias. En esa manera tuya de hacer que todo
+      parezca más fácil cuando estás cerca. Extraño eso. Te extraño a ti.
+    </p>
+
+    <p>
+      Recuerdo el día que nos conocimos frente a ese banco, con tus trenzas,
+      y los dos muertos de vergüenza. Y ese abrazo que fue todo sin ser nada todavía.
+      Desde ese momento quise estar cerca de ti.
+    </p>
+
+    <p>
+      Recuerdo cuando viniste tú hasta mi trabajo a traerme el terno de tu tío para que más tarde pudiera acompañarte a su fiesta de 18.
+      Nadie hace eso. Nadie que no te quiera de verdad hace ese camino. Esa noche bailamos, estuvimos con tu familia,
+      y yo no quería que se acabara.
+    </p>
+
+    <p>
+      Recuerdo las veces que íbamos a comer y te compraba pollo, y te veías tan contenta por algo tan simple.
+      Recuerdo ir yo a recogerte a la salida de tu universidad, esperarte ahí para que el día terminara juntos.
+      Y tu primer día de clases… fui a dejarte una flor y tu cajita de tulipanes porque quería que sintieras
+      que yo estaba ahí para cada momento importante de tu vida.
+      Esas cosas simples eran las que más amaba de lo nuestro.
+    </p>
+
+    <p>
+      El chifle que compraba y tú me regañabas con cariño. Los detalles que me dabas y que aún guardo en mi cuarto,
+      porque no soy capaz de quitarlos. El cuadro de ti con tu abuelo que quise regalarte para que nunca estuvieran
+      separados. Todo eso sigue aquí, conmigo.
+    </p>
+
+    <p>
+      Me contabas tus problemas, los de tu familia, lo que te dolía…
+      y yo siempre escuchaba, siempre estaba. Y tú también estabas para mí.
+      Me apoyabas de una forma que no supe con nadie más.
+      Nuestra relación tuvo discusiones, sí, pero cada vez que nos veíamos,
+      todo eso desaparecía. Éramos tan felices. Tan contentos. Tan nosotros.
+    </p>
+
+    <p>
+      Contigo hice cosas que nunca había hecho. Sentí cosas que nunca había sentido.
+      Eres mi primera vez en todo lo que importa, mi tiquitita bella.
+      Y eso no se va. Eso no se olvida. Eso me cambió para siempre.
+    </p>
+
+    <p>
+      Casi tres años de apodos, de abrazos, de canciones, de planes, de promesas.
+      De ser tu <em>bibito tiquitito</em> y que tú fueras mi <em>cuchurrumina</em>.
+      De inventar palabras porque "te amo" me parecía poco para todo lo que siento.
+    </p>
+
+    <p>
+      Esa palabra que inventé para ti, <span class="palabra-inventada">Teammilcarolmuch</span>,
+      sigue siendo verdad. Hoy más que nunca.
+    </p>
+
+    <p>
+      No te escribo para presionarte ni para hacerte sentir mal.
+      Te escribo porque eres la persona más especial que ha entrado en mi vida
+      y quería que lo supieras de una manera que fuera tan única como tú.
+    </p>
+
+    <p>Te amo demasiado, mi tiquitita bella. 
+       Solo quiero saber si aún hay algo. Solo eso.</p>
+
+    <div class="carta-firma">
+      Con todo mi corazón, tu Stefano. <span class="heart">💙</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     PREGUNTA FINAL
+══════════════════════════════════════ -->
+<section id="pregunta">
+  <p class="section-eyebrow" style="color:var(--dorado);">Una sola pregunta</p>
+  <h2 class="pregunta-titulo">
+    ¿Aún me quieres,<br>aunque sea un poquito?
+  </h2>
+  <p class="pregunta-subtitulo">No hay respuesta incorrecta. Solo quiero saber la verdad.</p>
+
+  <div class="botones">
+    <button class="btn btn-si" onclick="responder('si')">Sí, te quiero 💙</button>
+    <button class="btn btn-no" onclick="responder('no')">No, lo siento</button>
+  </div>
+
+  <div id="respuesta-box">
+    <p id="respuesta-texto"></p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════ -->
+<script>
+/* ── ESTRELLAS ── */
+(function(){
+  const c = document.getElementById('stars-canvas');
+  const ctx = c.getContext('2d');
+  let W, H, stars = [];
+
+  function resize(){
+    W = c.width  = window.innerWidth;
+    H = c.height = window.innerHeight;
+    stars = Array.from({length:180}, ()=>({
+      x: Math.random()*W,
+      y: Math.random()*H,
+      r: Math.random()*1.4 + 0.3,
+      a: Math.random(),
+      speed: Math.random()*0.005 + 0.002,
+      dir: Math.random() > 0.5 ? 1 : -1
+    }));
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    stars.forEach(s=>{
+      s.a += s.speed * s.dir;
+      if(s.a > 1 || s.a < 0) s.dir *= -1;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(255,255,255,${s.a})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize(); draw();
+})();
+
+/* ── CORAZONES FLOTANTES ── */
+(function(){
+  const container = document.getElementById('fhearts');
+  const emojis = ['💙','🤍','💫','✨','💕'];
+  for(let i=0;i<18;i++){
+    const el = document.createElement('span');
+    el.className = 'fh';
+    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    el.style.left = (Math.random()*100)+'%';
+    el.style.animationDuration = (8 + Math.random()*12)+'s';
+    el.style.animationDelay = (Math.random()*10)+'s';
+    el.style.fontSize = (14 + Math.random()*18)+'px';
+    container.appendChild(el);
+  }
+})();
+
+/* ── SCROLL REVEAL ── */
+(function(){
+  const items = document.querySelectorAll('.tl-item');
+  const obs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:0.2});
+  items.forEach(el=>obs.observe(el));
+})();
+
+/* ── RESPUESTA ── */
+function responder(opcion) {
+  const box  = document.getElementById('respuesta-box');
+  const txt  = document.getElementById('respuesta-texto');
+  const bots = document.querySelector('.botones');
+
+  bots.style.opacity = '0.3';
+  bots.style.pointerEvents = 'none';
+  box.style.display = 'block';
+
+  if(opcion === 'si'){
+    txt.innerHTML = `
+      Carolay… eso es todo lo que necesitaba saber. 💙<br><br>
+      Dame la oportunidad de demostrarte que lo nuestro vale la pena.<br>
+      <em style="color:var(--dorado);">Teammilcarolmuch.</em>
+    `;
+    lanzarConfetti();
+    notificarStefano('SÍ');
+  } else {
+    txt.innerHTML = `
+      Gracias por tu honestidad, Carolay.<br>
+      Lo que vivimos fue real y siempre lo llevaré conmigo.<br>
+      <em style="font-family:'Cormorant Garamond',serif; font-size:1.1em; color:rgba(255,255,255,0.6);">
+        Cuídate mucho. De verdad.
+      </em>
+    `;
+    notificarStefano('NO');
+  }
+}
+
+/* ── NOTIFICACIÓN A STEFANO vía Formspree ── */
+async function notificarStefano(respuesta) {
+  try {
+    await fetch('https://formspree.io/f/xaqzvwwq', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        de: 'Carolay',
+        respondio: respuesta,
+        mensaje: respuesta === 'SÍ'
+          ? '💙 Carolay respondió que SÍ te quiere aunque sea un poquito.'
+          : '💔 Carolay respondió que no.'
+      })
+    });
+  } catch(e) { /* silencioso */ }
+}
+
+/* ── CONFETTI ── */
+function lanzarConfetti(){
+  const colors = ['#2155A3','#C9A84C','#F7C5D0','#ffffff','#3a7bd5'];
+  for(let i=0;i<80;i++){
+    const el = document.createElement('div');
+    el.style.cssText = `
+      position:fixed; z-index:9999; pointer-events:none;
+      width:${6+Math.random()*8}px; height:${6+Math.random()*8}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+      left:${Math.random()*100}vw; top:-20px;
+      opacity:1;
+    `;
+    document.body.appendChild(el);
+    const dur = 1500 + Math.random()*1500;
+    const tx  = (Math.random()-0.5)*200;
+    const rot = Math.random()*720;
+    el.animate([
+      { transform:`translate(0,0) rotate(0deg)`, opacity:1 },
+      { transform:`translate(${tx}px,110vh) rotate(${rot}deg)`, opacity:0 }
+    ],{ duration:dur, easing:'cubic-bezier(.25,.46,.45,.94)' })
+    .onfinish = ()=> el.remove();
+  }
+}
+</script>
+</body>
+</html>
